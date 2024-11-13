@@ -40,6 +40,7 @@ def get_twitter_trends(url):
     logger.info("Iniciando extração de tendências do Twitter...")
     service = Service(ChromeDriverManager().install())
     options = Options()
+    options.add_argument("--headless")
     driver = webdriver.Chrome(service=service, options=options)
     
     try:
@@ -104,6 +105,7 @@ def get_twitter_trends(url):
 # Função para extrair hashtags populares do TikTok usando Selenium
 def get_tiktok_trends(url):
     options = Options()
+    options.add_argument("--headless")
     options.add_argument("--start-maximized")
     options.add_argument("window-size=1300,900")  # Largura maior que 1200
 
