@@ -12,12 +12,12 @@ logger = logging.getLogger(__name__)
 pytrends = TrendReq(hl='pt-BR', tz=360)
 
 # Lista de estados do Brasil
-estados = ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", 
+states  = ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", 
            "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", 
            "RS", "RO", "RR", "SC", "SP", "SE", "TO"]
 
 # Produtos populares de e-commerce organizados por categoria
-categorias_produtos = {
+product_categories  = {
     'Telefonia': ["Celular", "iPhone", "Samsung Galaxy", "Xiaomi", "Motorola"],
     'Eletrônicos': ["Smart TV", "Chromecast", "Fire Stick", "Televisão LED", "TV 4K", "TV 8K", "TV OLED"],
     'Eletroportáteis': ["Airfryer", "Cafeteira", "Batedeira", "Liquidificador", "Aspirador de Pó", "Ferro de Passar"],
@@ -53,43 +53,43 @@ categorias_produtos = {
 #]
 
 
-def obter_tendencias_estado(estado):
-    logger.info(f"Iniciando consulta de tendências para o estado: {estado}")
-    resultados = []
+def get_trends_by_state(state):
+    logger.info(f"Iniciando consulta de tendências para o estado: {state}")
+    results = []
 
-    for categoria, produtos in categorias_produtos.items():
-        logger.info(f"Consultando categoria: {categoria}")
+    for category, products in product_categories.items():
+        logger.info(f"Consultando categoria: {category}")
         # Seleciona um subconjunto aleatório de produtos para consulta
-        produtos_selecionados = random.sample(produtos, min(len(produtos), random.randint(3, 5)))
-
-        for produto in produtos_selecionados:
+        selected_products = random.sample(products, min(len(products), random.randint(3, 5)))
+        for product in selected_products:
             try:
-                pytrends.build_payload([produto], timeframe='now 7-d', geo=f'BR-{estado}')
-                interesse_regiao = pytrends.interest_by_region(resolution='REGION')
-                if estado in interesse_regiao.index:
-                    resultados.append({
-                        'Estado': estado,
-                        'Produto': produto
+                pytrends.build_payload([product], timeframe='now 7-d', geo=f'BR-{state}')
+                regional_interest = pytrends.interest_by_region(resolution='REGION')
+                if state in regional_interest.index:
+                    score = regional_interest.loc[state, product]
+                    results.append({
+                        'Estado': state,
+                        'Produto': product
                     })
 
             except Exception as e:
-                logger.error(f"Erro ao consultar produto {produto}: {e}")
+                logger.error(f"Erro ao consultar produto {product}: {e}")
 
             # Espera aleatória entre consultas para evitar bloqueio
             time.sleep(random.randint(120, 900))  # Espera de 2 a 15 minutos
 
-    return pd.DataFrame(resultados) if resultados else None
+    return pd.DataFrame(results) if results else None
 
-def executar_consultas_todas_regioes():
-    for estado in estados:
-        logger.info(f"Processando o estado {estado}")
-        resultado_estado = obter_tendencias_estado(estado)
-        if resultado_estado is not None:
-            filename = f"tendencias_{estado.lower()}.tsv"
-            resultado_estado.to_csv(filename, sep='\t', index=False)
+def process_all_regions():
+    for state in states:
+        logger.info(f"Processando o estado {state}")
+        state_results  = get_trends_by_state(state)
+        if state_results  is not None:
+            filename = f"tendencias_{state.lower()}.tsv"
+            state_results .to_csv(filename, sep='\t', index=False)
             logger.info(f"Tendências salvas em {filename}.")
         else:
-            logger.warning(f"Nenhum dado encontrado para o estado {estado}")
+            logger.warning(f"Nenhum dado encontrado para o estado {state}")
 
 if __name__ == "__main__":
-    executar_consultas_todas_regioes()
+    process_all_regions()
