@@ -38,7 +38,7 @@ async def save_videos_to_tsv(videos, filename):
     with open(filename, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file, delimiter='\t')
         # Escreve o cabeçalho do arquivo TSV
-        writer.writerow(["Video ID", "Description", "Create Time", "Likes", "Comments", "Shares"])
+        writer.writerow(["ID", "Description", "Create Time", "Likes", "Comments", "Shares"])
         # Itera sobre cada vídeo e salva suas informações
         for video in videos:
             writer.writerow([

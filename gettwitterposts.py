@@ -84,7 +84,7 @@ def save_to_tsv(tweets, filename):
     # Escreve o conteúdo em um arquivo TSV
     with open(filename, mode='w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file, delimiter='\t')
-        writer.writerow(["Data", "Autor ID", "Texto"])
+        writer.writerow(["Create Time", "Author ID", "Description"])
         for tweet in tweets:
             # Remove tabulações e quebras de linha para manter o texto em uma única linha
             cleaned_text = tweet['text'].replace('\n', ' ').replace('\t', ' ')
